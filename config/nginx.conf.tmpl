@@ -2,7 +2,6 @@
 
 # the upstream component nginx needs to connect to
 upstream app {
-    #XXX - APP_HOME --> /home/docker/app
     server unix:${APP_HOME}/revelMI.sock; # for a file socket
 }
 
@@ -21,18 +20,16 @@ server {
 
     # Django media
     location /media  {
-        alias /home/docker/persistent/media;  # your Django project's media files - amend as required
+        alias ${APP_HOME}/persistent/media;  # your Django project's media files - amend as required
     }
 
     location /static {
-        alias /home/docker/volatile/static; # your Django project's static files - amend as required
+        alias ${APP_HOME}/volatile/static; # your Django project's static files - amend as required
     }
 
     # Finally, send all non-media requests to the Django server.
     location / {
-        uwsgi_pass  app;
-
-        #XXX- ENV_SERVER_HOME
-        include     ${SERVER_HOME}/config/uwsgi_params; # the uwsgi_params file you installed
+        uwsgi_pass app;
+        include     ${APP_HOME}/config/uwsgi_params; # the uwsgi_params file you installed
     }
 }
